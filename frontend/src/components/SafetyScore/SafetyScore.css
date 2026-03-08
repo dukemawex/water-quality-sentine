@@ -1,0 +1,33 @@
+.safety-score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+}
+
+.safety-score__gauge {
+  flex-shrink: 0;
+}
+
+.safety-score__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.safety-score__icon {
+  font-size: 1.2rem;
+}
+
+.safety-score__rating {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.safety-score__label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

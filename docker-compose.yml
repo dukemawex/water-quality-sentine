@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wqs_backend
+    restart: always
+    ports:
+      - '5000:5000'
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGODB_URI=mongodb://mongo:27017/water_quality_sentinel
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - wqs_network
+
+  mongo:
+    image: mongo:7
+    container_name: wqs_mongo
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wqs_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:5000}
+        - VITE_BASE_URL=${VITE_BASE_URL:-/}
+    container_name: wqs_frontend
+    restart: always
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+    networks:
+      - wqs_network
+
+volumes:
+  mongo_data:
+
+networks:
+  wqs_network:
+    driver: bridge
